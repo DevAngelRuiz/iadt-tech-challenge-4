@@ -1,0 +1,3 @@
+patient_id,timestamp,medication,dose,unit,frequency_per_day,planned_change,reason,action
+sintetica_normal,2026-11-04T12:00:00+00:00,medicamento_demo,25,mg,1,True,Prescrição inicial ou revisão planejada,set
+sintetica_normal,2026-11-04T12:01:10+00:00,medicamento_demo,25,mg,1,True,Prescrição inicial ou revisão planejada,set

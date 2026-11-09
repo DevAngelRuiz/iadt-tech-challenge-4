@@ -5,6 +5,9 @@ from __future__ import annotations
 
 import shutil
 import sys
+import json
+import hashlib
+import yaml
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,9 +24,13 @@ def main() -> int:
     from ultralytics import YOLO
 
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
+    dataset = yaml.safe_load(YOLO_DATA_YAML.read_text(encoding="utf-8"))
+    dataset["path"] = str(YOLO_DATA_YAML.parent.resolve())
+    runtime_yaml = MODELS_DIR / "bleeding_dataset.runtime.yaml"
+    runtime_yaml.write_text(yaml.safe_dump(dataset), encoding="utf-8")
     model = YOLO("yolov8n.pt")
     results = model.train(
-        data=str(YOLO_DATA_YAML),
+        data=str(runtime_yaml),
         epochs=15,
         imgsz=640,
         batch=8,
@@ -44,7 +51,14 @@ def main() -> int:
         return 1
 
     # Validação rápida
-    metrics = model.val(data=str(YOLO_DATA_YAML))
+    metrics = YOLO(str(dest)).val(data=str(runtime_yaml))
+    exported = {"model": "YOLOv8n-bleeding", "epochs": 15,
+                "dataset": "data/yolo_bleeding (synthetic)", "weights": str(dest.relative_to(ROOT)),
+                "weights_sha256": hashlib.sha256(dest.read_bytes()).hexdigest(),
+                "metrics": {"precision": float(metrics.box.mp), "recall": float(metrics.box.mr),
+                            "mAP50": float(metrics.box.map50), "mAP50_95": float(metrics.box.map)},
+                "note": "Exportado da validação do peso best.pt entregue; validação sintética."}
+    (MODELS_DIR / "bleeding_metrics.json").write_text(json.dumps(exported, indent=2), encoding="utf-8")
     print("[ok] Validação:", metrics)
     return 0
 

@@ -1,4 +1,4 @@
-path: /Users/gustavoscarpim/Documents/projetos/fiap/iadt/fase4/iadt-tech-challenge-4/data/yolo_bleeding
+path: data/yolo_bleeding
 train: images/train
 val: images/val
 names:

@@ -1,0 +1,16 @@
+{
+  "description": "Limiares sintéticos para demonstração acadêmica; não constituem protocolo clínico.",
+  "window": 20,
+  "min_history": 5,
+  "robust_z": 4.0,
+  "vitals": {
+    "heart_rate_bpm": {"min": 50, "max": 110, "min_scale": 2, "severity": "ATENCAO"},
+    "spo2_pct": {"min": 94, "max": 100, "min_scale": 1, "severity": "CRITICO"},
+    "systolic_mmhg": {"min": 90, "max": 150, "min_scale": 3, "severity": "ATENCAO"},
+    "diastolic_mmhg": {"min": 50, "max": 95, "min_scale": 3, "severity": "ATENCAO"}
+  },
+  "prescription_ratio": 2.0,
+  "movement_low_threshold": 0.05,
+  "immobility_seconds": 30,
+  "movement_max_gap_seconds": 15
+}

@@ -1,0 +1,26 @@
+{"kind": "vitals", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:00:00+00:00", "metrics": {"heart_rate_bpm": 72, "spo2_pct": 98, "systolic_mmhg": 118, "diastolic_mmhg": 76}}
+{"kind": "movement", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:00:00+00:00", "activity_score": 0.35, "patient_present": true, "quality_good": true}
+{"kind": "prescription", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:00:00+00:00", "medication": "medicamento_demo", "dose": 25, "unit": "mg", "frequency_per_day": 1, "planned_change": true, "reason": "Prescrição inicial ou revisão planejada", "action": "set"}
+{"kind": "vitals", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:00:10+00:00", "metrics": {"heart_rate_bpm": 73, "spo2_pct": 98, "systolic_mmhg": 119, "diastolic_mmhg": 77}}
+{"kind": "movement", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:00:10+00:00", "activity_score": 0.37, "patient_present": true, "quality_good": true}
+{"kind": "vitals", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:00:20+00:00", "metrics": {"heart_rate_bpm": 74, "spo2_pct": 98, "systolic_mmhg": 120, "diastolic_mmhg": 76}}
+{"kind": "movement", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:00:20+00:00", "activity_score": 0.38999999999999996, "patient_present": true, "quality_good": true}
+{"kind": "vitals", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:00:30+00:00", "metrics": {"heart_rate_bpm": 72, "spo2_pct": 98, "systolic_mmhg": 118, "diastolic_mmhg": 77}}
+{"kind": "movement", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:00:30+00:00", "activity_score": 0.35, "patient_present": true, "quality_good": true}
+{"kind": "vitals", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:00:40+00:00", "metrics": {"heart_rate_bpm": 73, "spo2_pct": 98, "systolic_mmhg": 119, "diastolic_mmhg": 76}}
+{"kind": "movement", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:00:40+00:00", "activity_score": 0.37, "patient_present": true, "quality_good": true}
+{"kind": "vitals", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:00:50+00:00", "metrics": {"heart_rate_bpm": 74, "spo2_pct": 98, "systolic_mmhg": 120, "diastolic_mmhg": 77}}
+{"kind": "movement", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:00:50+00:00", "activity_score": 0.38999999999999996, "patient_present": true, "quality_good": true}
+{"kind": "vitals", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:01:00+00:00", "metrics": {"heart_rate_bpm": 72, "spo2_pct": 98, "systolic_mmhg": 118, "diastolic_mmhg": 76}}
+{"kind": "movement", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:01:00+00:00", "activity_score": 0.35, "patient_present": true, "quality_good": true}
+{"kind": "vitals", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:01:10+00:00", "metrics": {"heart_rate_bpm": 73, "spo2_pct": 98, "systolic_mmhg": 119, "diastolic_mmhg": 77}}
+{"kind": "movement", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:01:10+00:00", "activity_score": 0.37, "patient_present": true, "quality_good": true}
+{"kind": "prescription", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:01:10+00:00", "medication": "medicamento_demo", "dose": 25, "unit": "mg", "frequency_per_day": 1, "planned_change": true, "reason": "Prescrição inicial ou revisão planejada", "action": "set"}
+{"kind": "vitals", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:01:20+00:00", "metrics": {"heart_rate_bpm": 74, "spo2_pct": 98, "systolic_mmhg": 120, "diastolic_mmhg": 76}}
+{"kind": "movement", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:01:20+00:00", "activity_score": 0.38999999999999996, "patient_present": true, "quality_good": true}
+{"kind": "vitals", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:01:30+00:00", "metrics": {"heart_rate_bpm": 72, "spo2_pct": 98, "systolic_mmhg": 118, "diastolic_mmhg": 77}}
+{"kind": "movement", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:01:30+00:00", "activity_score": 0.35, "patient_present": true, "quality_good": true}
+{"kind": "vitals", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:01:40+00:00", "metrics": {"heart_rate_bpm": 73, "spo2_pct": 98, "systolic_mmhg": 119, "diastolic_mmhg": 76}}
+{"kind": "movement", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:01:40+00:00", "activity_score": 0.37, "patient_present": true, "quality_good": true}
+{"kind": "vitals", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:01:50+00:00", "metrics": {"heart_rate_bpm": 74, "spo2_pct": 98, "systolic_mmhg": 120, "diastolic_mmhg": 77}}
+{"kind": "movement", "patient_id": "sintetica_normal", "timestamp": "2026-11-04T12:01:50+00:00", "activity_score": 0.38999999999999996, "patient_present": true, "quality_good": true}

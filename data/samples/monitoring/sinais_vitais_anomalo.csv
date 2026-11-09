@@ -1,0 +1,13 @@
+patient_id,timestamp,heart_rate_bpm,spo2_pct,systolic_mmhg,diastolic_mmhg
+sintetica_anomala,2026-11-04T12:00:00+00:00,72,98,118,76
+sintetica_anomala,2026-11-04T12:00:10+00:00,73,98,119,77
+sintetica_anomala,2026-11-04T12:00:20+00:00,74,98,120,76
+sintetica_anomala,2026-11-04T12:00:30+00:00,72,98,118,77
+sintetica_anomala,2026-11-04T12:00:40+00:00,73,98,119,76
+sintetica_anomala,2026-11-04T12:00:50+00:00,74,98,120,77
+sintetica_anomala,2026-11-04T12:01:00+00:00,72,98,118,76
+sintetica_anomala,2026-11-04T12:01:10+00:00,140,89,119,77
+sintetica_anomala,2026-11-04T12:01:20+00:00,140,89,120,76
+sintetica_anomala,2026-11-04T12:01:30+00:00,140,89,118,77
+sintetica_anomala,2026-11-04T12:01:40+00:00,140,89,119,76
+sintetica_anomala,2026-11-04T12:01:50+00:00,140,89,120,77

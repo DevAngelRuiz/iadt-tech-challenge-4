@@ -25,6 +25,14 @@ def _arm_up(landmarks) -> bool:
     return (le.y < ls.y) or (re.y < rs.y)
 
 
+def _pose_visible(landmarks) -> bool:
+    return all(
+        np.isfinite([landmarks[index].x, landmarks[index].y, landmarks[index].visibility]).all()
+        and landmarks[index].visibility >= .5
+        for index in (11, 12, 13, 14, 15, 16)
+    )
+
+
 def _analyze_mediapipe_solutions(video_path: Path, sample_every: int, max_frames: int | None) -> dict[str, Any] | None:
     try:
         import mediapipe as mp
@@ -42,6 +50,7 @@ def _analyze_mediapipe_solutions(video_path: Path, sample_every: int, max_frames
         raise FileNotFoundError(f"Não foi possível abrir o vídeo: {video_path}")
 
     closed_count = 0
+    visible_samples = detected_samples = 0
     samples = 0
     arm_up = False
     arm_movements = 0
@@ -57,7 +66,10 @@ def _analyze_mediapipe_solutions(video_path: Path, sample_every: int, max_frames
             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             results = pose.process(rgb)
             if results.pose_landmarks:
+                detected_samples += 1
+            if results.pose_landmarks and _pose_visible(results.pose_landmarks.landmark):
                 lm = results.pose_landmarks.landmark
+                visible_samples += 1
                 if _closed_posture(lm):
                     closed_count += 1
                 if _arm_up(lm):
@@ -66,15 +78,23 @@ def _analyze_mediapipe_solutions(video_path: Path, sample_every: int, max_frames
                         arm_movements += 1
                 else:
                     arm_up = False
+            else:
+                arm_up = False
             samples += 1
         frame_idx += 1
 
     cap.release()
     pose.close()
-    closed_score = (closed_count / samples) if samples else 0.0
+    closed_score = (closed_count / visible_samples) if visible_samples else 0.0
     return {
         "modality": "video_pose",
         "model": "MediaPipe Pose",
+        "status": "ok" if visible_samples else "unavailable",
+        "reason": None if visible_samples else "no_visible_pose",
+        "pose_available": bool(visible_samples),
+        "person_detected": bool(detected_samples),
+        "frames_with_visible_pose": visible_samples,
+        "pose_coverage": round(visible_samples / samples, 3) if samples else 0.,
         "frames_sampled": samples,
         "closed_frames": closed_count,
         "pose_closed_score": round(closed_score, 3),
@@ -84,14 +104,13 @@ def _analyze_mediapipe_solutions(video_path: Path, sample_every: int, max_frames
 
 
 def _analyze_motion_fallback(video_path: Path, sample_every: int, max_frames: int | None) -> dict[str, Any]:
-    """Fallback sem MediaPipe solutions: movimento óptico + assimetria (proxy de atividade/desconforto)."""
+    """Mede diferenças entre frames; não identifica pessoa, braços ou postura."""
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
         raise FileNotFoundError(f"Não foi possível abrir o vídeo: {video_path}")
 
     prev = None
     motion_vals: list[float] = []
-    asymmetry_vals: list[float] = []
     frame_idx = 0
     samples = 0
 
@@ -107,31 +126,25 @@ def _analyze_motion_fallback(video_path: Path, sample_every: int, max_frames: in
             if prev is not None:
                 diff = cv2.absdiff(prev, gray)
                 motion_vals.append(float(np.mean(diff)) / 255.0)
-                h, w = gray.shape
-                left = gray[:, : w // 2]
-                right = cv2.flip(gray[:, w // 2 :], 1)
-                minh = min(left.shape[0], right.shape[0])
-                minw = min(left.shape[1], right.shape[1])
-                asym = float(np.mean(cv2.absdiff(left[:minh, :minw], right[:minh, :minw]))) / 255.0
-                asymmetry_vals.append(asym)
             prev = gray
             samples += 1
         frame_idx += 1
     cap.release()
 
     mean_motion = float(np.mean(motion_vals)) if motion_vals else 0.0
-    mean_asym = float(np.mean(asymmetry_vals)) if asymmetry_vals else 0.0
-    # Baixo movimento + alta assimetria → posture "fechada"/desconforto (proxy)
-    closed_score = min(1.0, (1.0 - min(1.0, mean_motion * 8)) * 0.5 + mean_asym * 0.8)
-    arm_movements = int(mean_motion * 40)
 
     return {
         "modality": "video_pose",
         "model": "OpenCV-motion-fallback",
+        "status": "unavailable",
+        "reason": "pose_model_unavailable",
+        "pose_available": False,
+        "person_detected": None,
+        "activity_method": "frame_difference_without_person_detection",
         "frames_sampled": samples,
-        "closed_frames": int(closed_score * samples),
-        "pose_closed_score": round(closed_score, 3),
-        "arm_movements": arm_movements,
+        "closed_frames": 0,
+        "pose_closed_score": 0.,
+        "arm_movements": None,
         "physio_activity_score": round(min(1.0, mean_motion * 10), 3),
         "mean_motion": round(mean_motion, 4),
     }

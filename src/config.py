@@ -7,9 +7,16 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def load_environment(env_path: str | Path | None = None) -> bool:
+    """Carrega o .env da raiz sem substituir variáveis já definidas no sistema."""
+    return load_dotenv(dotenv_path=env_path if env_path is not None else ROOT / ".env", override=False)
+
+
+load_environment()
+
 DATA_DIR = ROOT / "data"
 SAMPLES_DIR = DATA_DIR / "samples"
 YOLO_DATA_DIR = DATA_DIR / "yolo_bleeding"
@@ -70,7 +77,9 @@ RISK_LEXICON = {
         "nao posso falar",
         "ameaça",
         "ameaca",
-        "controle",
+        "ele me controla",
+        "controla meu telefone",
+        "controla minhas mensagens",
         "me isola",
         "violencia",
         "violência",

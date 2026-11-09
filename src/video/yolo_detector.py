@@ -100,6 +100,7 @@ def analyze_video(
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     writer = None
     if output_video:
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
@@ -142,6 +143,8 @@ def analyze_video(
         "modality": "video_yolo",
         "model": "YOLOv8-bleeding" if detector.model else "HSV-fallback",
         "frames_processed": frame_idx,
+        "total_frames": total_frames,
+        "coverage": round(frame_idx / total_frames, 4) if total_frames > 0 else None,
         "frames_with_bleeding": frames_with_bleeding,
         "max_confidence": max_conf,
         "bleeding_score": round(score, 3),

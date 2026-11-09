@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import wave
+import uuid
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 
-from src.audio.transcriber import extract_audio_wav, transcribe_wav
+from src.audio.transcriber import AudioExtractionError, extract_audio_wav, transcribe_wav
 from src.config import RISK_LEXICON
 from src.text.classifier import classify_clinical_text
 
@@ -28,7 +29,7 @@ def _prosody_features(wav_path: Path) -> dict[str, float]:
     if samples.size == 0:
         return {"duration_sec": 0.0, "rms": 0.0, "silence_ratio": 1.0, "pause_score": 1.0, "fatigue_score": 0.0}
 
-    samples = samples / (np.max(np.abs(samples)) + 1e-6)
+    samples = samples / (32768.0 if width == 2 else 128.0)
     duration = samples.size / float(rate)
     frame = max(1, int(0.02 * rate))
     energies = []
@@ -55,18 +56,29 @@ def analyze_audio_risk(
     media_path: str | Path,
     work_dir: str | Path,
     transcript_override: str | None = None,
+    speech_provider: str | None = None,
+    language: str = "pt-BR",
 ) -> dict[str, Any]:
     work_dir = Path(work_dir)
     work_dir.mkdir(parents=True, exist_ok=True)
-    wav_path = work_dir / f"{Path(media_path).stem}_risk.wav"
-    extract_audio_wav(media_path, wav_path)
-    prosody = _prosody_features(wav_path)
+    wav_path = work_dir / f"{Path(media_path).stem}_{uuid.uuid4().hex}_risk.wav"
+    extraction_error = None
+    try:
+        extract_audio_wav(media_path, wav_path)
+        prosody = _prosody_features(wav_path)
+    except AudioExtractionError as exc:
+        extraction_error = str(exc)
+        prosody = {"duration_sec": 0, "rms": 0, "pause_score": 0, "fatigue_score": 0}
 
     if transcript_override is not None:
         transcript = transcript_override
         engine = "override"
+        tr = {"status": "manual", "cloud_executed": False}
+    elif extraction_error:
+        transcript, engine = "", "none"
+        tr = {"status": "unavailable", "cloud_executed": False}
     else:
-        tr = transcribe_wav(wav_path)
+        tr = transcribe_wav(wav_path, provider=speech_provider, language=language)
         transcript = tr["transcript"]
         engine = tr["engine"]
 
@@ -79,11 +91,11 @@ def analyze_audio_risk(
 
     # Combina léxico + prosódia (prosódia só reforça se houver sinal acústico real)
     label_scores = dict(classification.get("labels", {}))
-    acoustic_ok = prosody["rms"] > 0.01 and prosody["duration_sec"] > 0.5
-    if acoustic_ok and prosody["fatigue_score"] > 0.4:
+    acoustic_ok = (tr["status"] == "ok" and bool(transcript.strip())
+                   and prosody["rms"] > 0.01 and prosody["duration_sec"] > 0.5)
+    if acoustic_ok and prosody["fatigue_score"] > 0.4 and label_scores.get("fadiga", 0) > 0:
         label_scores["fadiga"] = max(label_scores.get("fadiga", 0.0), prosody["fatigue_score"])
-    if acoustic_ok and prosody["pause_score"] > 0.5:
-        label_scores["ansiedade"] = max(label_scores.get("ansiedade", 0.0), prosody["pause_score"] * 0.7)
+    # Pausas sozinhas não identificam ansiedade ou contexto gestacional.
 
     text_component = classification.get("text_risk_score", 0.0)
     if acoustic_ok:
@@ -100,6 +112,16 @@ def analyze_audio_risk(
         "source": str(media_path),
         "transcript": transcript,
         "stt_engine": engine,
+        "status": tr["status"],
+        "cloud_executed": tr.get("cloud_executed", False),
+        "model_inference_executed": tr.get("model_inference_executed", False),
+        "stt_model": tr.get("model"),
+        "stt_device": tr.get("device"),
+        "segments": tr.get("segments", []),
+        "extraction_error": extraction_error,
+        "speech_confirmed": acoustic_ok,
+        "vocal_findings": (["pausas_frequentes"] if acoustic_ok and prosody["pause_score"] > .5 else [])
+                          + (["baixa_energia_vocal"] if acoustic_ok and prosody["fatigue_score"] > .4 else []),
         "prosody": prosody,
         "labels": {k: round(v, 3) for k, v in label_scores.items()},
         "top_label": max(label_scores, key=label_scores.get) if label_scores else "indeterminado",

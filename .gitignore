@@ -17,3 +17,5 @@ models/*
 runs/
 wandb/
 yolov8n.pt
+data/yolo_bleeding/labels/*.cache
+EXPLICACAO_PROJETO.md
