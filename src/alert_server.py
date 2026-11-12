@@ -24,7 +24,7 @@ async function refresh(){try{const response=await fetch('/api/alerts');if(!respo
  node('small',`Paciente: ${a.patient_id||'demo'} · Origem: ${a.source||'multimodal'} · Recebido: ${a.received_at}`));
  if(a.timestamp)card.append(node('p',`Instante no dado: ${a.timestamp}`));
  if(a.evidence)card.append(node('pre',JSON.stringify(a.evidence,null,2)));
- card.append(node('p',`Processamento até enfileiramento: ${a.processing_latency_ms??'não medido'} ms`));
+ if(a.processing_latency_ms!=null)card.append(node('p',`Tempo de processamento até enfileiramento: ${a.processing_latency_ms} ms`));
  if(a.acknowledged_at)card.append(node('p',`Leitura confirmada: ${a.acknowledged_at}`));
  else{let b=node('button','Confirmar leitura');b.onclick=async()=>{b.disabled=true;const r=await fetch('/api/alerts/'+a.id+'/ack',{method:'POST'});if(!r.ok)alert('Falha ao confirmar leitura');await refresh()};card.append(b)}root.append(card)}
  }catch(e){document.querySelector('#status').textContent='Sem conexão com o receptor. Tentando novamente…'}}
